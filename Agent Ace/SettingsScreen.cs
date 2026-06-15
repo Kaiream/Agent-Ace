@@ -11,19 +11,20 @@ using System.Threading;
 
 namespace Agent_Ace
 {
-    // SPSŠ Betlémská, 3.I Karim Boufala
-    // Version: 1.2.0 - loads of bug fixes.
-    // Version: 1.1.0 - added save and load function.
+    // ČZU PEF: Informatics
+    // Creator: Karim Boufala
+
+    // Date: 13.05.2024
     // Version: 1.0.0 - game release.
-    // Date: 13.05.2021
+    // Version: 1.1.0 - added save and load function.
+    // Version: 1.2.0 - loads of bug fixes.
 
     public partial class SettingsScreen : Form
     {
-        // Hodnoty ze hry.
+        // Values from the game
         public static int cash;
         public static bool hasRifle, hasSpaceRifle, hasMachineGun, hasSonicGun;
 
-        // Hodnota pro tutoriál.
         int indexTutorial = 1;
         public SettingsScreen()
         {
@@ -38,7 +39,7 @@ namespace Agent_Ace
 
         private void SettingsScreen_Load(object sender, EventArgs e)
         {
-            // Fullscreen.
+            // Auto full screen
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             TopMost = true;
@@ -46,7 +47,6 @@ namespace Agent_Ace
 
         private void LoadMenu(object sender, EventArgs e)
         {
-            // Stejné nastavení jako u Main Menu
             MainMenu gameWindow = new MainMenu();
             gameWindow.Show();
             this.Close();
@@ -61,7 +61,6 @@ namespace Agent_Ace
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            // Tutorál funguje tak, že si uživatel může překlikovat jak chce, vždycky to vykreslí jiný obrázek s jinýma informacema.
             if (indexTutorial > 0 && indexTutorial < 7)
             {
                 indexTutorial++;

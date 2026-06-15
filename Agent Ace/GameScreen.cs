@@ -11,15 +11,18 @@ using System.Threading;
 
 namespace Agent_Ace
 {
-    // SPSŠ Betlémská, 3.I Karim Boufala
-    // Version: 1.2.0 - loads of bug fixes.
-    // Version: 1.1.0 - added save and load function.
+    // ČZU PEF: Informatics
+    // Creator: Karim Boufala
+
+    // Date: 13.05.2024
     // Version: 1.0.0 - game release.
-    // Date: 13.05.2021
+    // Version: 1.1.0 - added save and load function.
+    // Version: 1.2.0 - loads of bug fixes.
+
 
     public partial class GameScreen : Form
     {
-        // Definujem základní proměnné, které budem používat skrz celou hru
+        // Global variables
         bool up, down, left, right, shot, gameOver, gunOverheat;
         
         double score = 0;
@@ -46,8 +49,8 @@ namespace Agent_Ace
 
         public GameScreen()
         {
+            // Initial style
             InitializeComponent();
-            // Změněné styl tlačítek a textboxů.
             btnMainMenu.FlatStyle = FlatStyle.Flat;
             btnRestart.FlatStyle = FlatStyle.Flat;
             btnResume.FlatStyle = FlatStyle.Flat;
@@ -66,12 +69,11 @@ namespace Agent_Ace
 
         private void GameScreen_Load(object sender, EventArgs e)
         {
-            // Zase jdeme do fullscreen.
+            // Auto full screen
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             TopMost = true;
 
-            // Různé nastavení, které se aktivují při načtení formuláře.
             ChangeCar1();
             ChangeCar2();
             ChangeObstacle1();
@@ -80,7 +82,7 @@ namespace Agent_Ace
             pcbRifle.Visible = false;
             rdbEquipBuiltInPistol.Checked = true;
 
-            // Load Save function
+            // If the user has previously bought guns, they will show as "free" after loding the save
             if (hasRifle == true || Convert.ToBoolean(MainMenu.hasRifleS) == true)
             {
                 riflePrice = 0;
@@ -109,7 +111,7 @@ namespace Agent_Ace
 
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
-            // Tady vykresluju silnici za pomocí graphics.
+            // Road
             Pen penDash = new Pen(Color.FromArgb(255, 250, 255, 245), 5);
             Pen penLine = new Pen(Color.FromArgb(255, 250, 255, 245), 7);
             penDash.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
@@ -120,27 +122,24 @@ namespace Agent_Ace
             e.Graphics.DrawLine(penDash, 0, 740, 1920, 740);
             e.Graphics.DrawLine(penLine, 0, 865, 1920, 865);
 
-            // Vykreslí se blok trávníku.
+            // Grass
             SolidBrush brushGrass = new SolidBrush(Color.FromArgb(255, 0, 200, 33));
             e.Graphics.FillRectangle(brushGrass, 0, 870, 1920, 237);
             e.Graphics.FillRectangle(brushGrass, 0, 0, 1920, 237);
         }
 
-        // Hlavní časovač, vlastně určuje všechno v téhle hře.
         private void MainTimerEvent(object sender, EventArgs e)
         {
-            // Scóre se zvetší každým uplynulým intervalem
             score += 0.5 + (playerSpeed / 50);
 
-            // Progress bar a hra se zastaví když hráč dosáhne cíle.
+            // Win condition
             if (pgbScore.Value == level1Distance)
             {
                 GameTimer.Stop();
-                // Odměna.
                 MessageBox.Show("You reached the goal of 3000 meters\n      here's a bonus of 10,000$€", "Congratulations you won!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 cash += 10000;
                 DialogResult msgContinue = MessageBox.Show("Would you like to continue playing?", "Endless mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                // Pokud chce hráč pokračovat, hra se znovu spustí.
+                // If the user wants to continue in endless mode, the game restarts and the goal becomes unreachable
                 if (msgContinue == System.Windows.Forms.DialogResult.Yes)
                 {
                     pgbScore.Maximum = int.MaxValue;
@@ -152,7 +151,6 @@ namespace Agent_Ace
                 }
                 else
                 {
-                    // Pokud ne tak se hra restartuje.
                     RestartGame();
                 }
             }
@@ -166,7 +164,7 @@ namespace Agent_Ace
                 lblScore.Left = (pgbScore.Value / 3) + 340;
             }
 
-            // Připočání scóre do progress bar
+            // Score recalculation into progress bar
             if (pgbScore.Value > 3001)
             {
                 pcbCarScore.Left = 1440;
@@ -179,11 +177,10 @@ namespace Agent_Ace
                 pcbCarScore.Left = (pgbScore.Value / 3) + 440;
             }
 
-            // Scóre a peníze se každý tik aktualizuje
             lblScore.Text = "Score: " + Math.Round(score, 0) + " m";
             lblCash.Text = "Cashmoney: " + cash + "$€";
 
-            // Zde je hlavní kód pro pohyb hráče, kde player.Top určuje kam až se smí hráč dostat nahorů.
+            // Player movement
             if (up == true && player.Top > 250)
             {
                 player.Top -= playerSpeed;
@@ -201,14 +198,13 @@ namespace Agent_Ace
                 player.Left += playerSpeed;
             }
 
-            // Pohyb nepřátel. Nepřátelé jsou trochu rychlejší než hráč.
+            // Enemy movement
             enemy1.Left -= enemySpeed;
             enemy2.Left -= enemySpeed;
-            // Progress bar
+
             pgbEnemy1.Left -= enemySpeed;
             pgbEnemy2.Left -= enemySpeed;
 
-            // Až se nepřítel dostane mimo obrazovku, změní se jeho poloha pomocí metody ChangeCar.
             if (enemy1.Left + enemy1.Width < 0)
             {
                 ChangeCar1();
@@ -218,27 +214,23 @@ namespace Agent_Ace
                 ChangeCar2();
             }
 
-            // Foreach kontroluje, jestli jsou komponenty ve formuláří.
             foreach (Control x in this.Controls)
             {
-                // If který pohybuje s překážkama.
+                // Obstacles
                 if (x is PictureBox && (string)x.Tag == "obstacle1")
                 {
                     x.Left -= playerSpeed;
 
                     if (x.Left < -200)
                     {
-                        // Překážka se změní na jinou.
                         ChangeObstacle1();
                     }
                     if (player.Bounds.IntersectsWith(x.Bounds))
                     {
-                        // Pokud se hráč dotkne překážky, aktivuje se metoda GameOver.
                         GameOver();
                     }
                 }
-
-                // Překážka 2.
+                
                 if (x is PictureBox && (string)x.Tag == "obstacle2")
                 {
                     x.Left -= playerSpeed;
@@ -253,33 +245,27 @@ namespace Agent_Ace
                     }
                 }
 
-                // If, který si kontruluje jestli je x Picturbox a má Tag "bullet".
+                // Bullet
                 if (x is PictureBox && (string)x.Tag == "bullet")
                 {
-                    // Pokud jo tak se kulka začne hýbat.
                     x.Left += bulletSpeed;
 
                     if (x.Left >= 2000)
                     {
-                        // Kulka se rozbije pokud vejde z pole hry.
                         RemoveBullet((PictureBox)x);
                     }
 
-                    // If, který pozná, když se kulka s nepřátely potká.
                     if (enemy1.Bounds.IntersectsWith(x.Bounds))
                     {
-                        // Switch rozezná, která auta jsou v pictureboxu.
                         switch ((string)enemy1.Tag)
                         {
                             case "police":
-                                // Pokud je to policie tak ti dá peníze za polici, resetne hp bar a zničí kulku.
                                 cash += cashPolice;
                                 pgbEnemy1.Value = 0;
                                 RemoveBullet((PictureBox)x);
                                 ChangeCar1();
                                 break;
                             case "swat":
-                                // If kolik hp má konkrétni nepřítel.
                                 if (swathp1 > 1)
                                 {
                                     swathp1--;
@@ -288,7 +274,6 @@ namespace Agent_Ace
                                 }
                                 else
                                 {
-                                    // Pokud už nemá životy, tak se stane to samé jako u policie.
                                     cash += cashSwat;
                                     pgbEnemy1.Value = 0;
                                     RemoveBullet((PictureBox)x);
@@ -329,7 +314,7 @@ namespace Agent_Ace
                                 break;
                         }
                     }
-                    // To stejné taky i pro nepřátele 2.
+
                     if (enemy2.Bounds.IntersectsWith(x.Bounds))
                     {
                         switch ((string)enemy2.Tag)
@@ -392,7 +377,7 @@ namespace Agent_Ace
                 }
             }
 
-            // Pokud se hráč dotkne nepřátel, prohraje
+            // Lose condition
             if (player.Bounds.IntersectsWith(enemy1.Bounds))
             {
                 GameOver();
@@ -402,7 +387,6 @@ namespace Agent_Ace
                 GameOver();
             }
 
-            // Switch který zrychluje rychlost hry při dosažením konkrétní hodnoty scóre.
             switch (score)
             {
                 case 200:
@@ -447,7 +431,6 @@ namespace Agent_Ace
                     break;
             }
 
-            // Pokud je počet kulek na obrazovce vyžší než hodnota přehřátí zbraně tak se aktivuje GunOverheat metoda.
             if (bulletCount > overHeatValue)
             {
                 GunOverheat();
@@ -456,7 +439,7 @@ namespace Agent_Ace
 
         private void KeyIsDown(object sender, KeyEventArgs e)
         {
-            // Pohyb hráče
+            // Player movement
             if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
             {
                 up = true;
@@ -473,7 +456,8 @@ namespace Agent_Ace
             {
                 right = true;
             }
-            // Když hráč zmáčkne escape, hra se zastaví a zobrazí se pause menu
+
+            // Pause menu
             if (e.KeyCode == Keys.Escape)
             {
                 GameTimer.Stop();
@@ -490,10 +474,10 @@ namespace Agent_Ace
                 pcbMainMenu.Visible = true;
                 pcbExplosion.Visible = false;
             }
-            // Když hráč zmáčkne space, tak vytvoří novou instanci metody MakeBullet. Při tom musí být všechny tyto metory false.
+
+            // MakeBullet instancing
             if (e.KeyCode == Keys.Space && shot == false && gunOverheat == false && gameOver == false)
             {
-                // Ify kontrolují jakou má hráč zbraň vybavenou
                 if (rdbEquipBuiltInPistol.Checked)
                 {
                     MakeBullet(10, 5);
@@ -534,7 +518,7 @@ namespace Agent_Ace
 
         private void KeyIsUp(object sender, KeyEventArgs e)
         {
-            // Pohyb.
+            // Player movement
             if (e.KeyCode == Keys.Up || e.KeyCode == Keys.W)
             {
                 up = false;
@@ -555,7 +539,7 @@ namespace Agent_Ace
             {
                 shot = false;
             }
-            // Pokud je hra prohraná, hráč může hru znovu spustit pomocí enteru.
+
             if (e.KeyCode == Keys.Enter && gameOver == true)
             {
                 RestartGame();
@@ -564,7 +548,6 @@ namespace Agent_Ace
 
         private void RestartGame() 
         {
-            // Všechny boolean operátory se nastaví na false, i scóre, rychlost hráče a rychlost nepřátel se nastaví na defaultní hodnoty.
             up = false;
             down = false;
             left = false;
@@ -584,15 +567,12 @@ namespace Agent_Ace
             lblGameOver.Visible = false;
             pcbExplosion.Visible = false;
 
-            // Při restartování hry se změní auta.
             ChangeCar1();
             ChangeCar2();
 
-            // Také změní překážka.
             ChangeObstacle1();
             ChangeObstacle2();
 
-            // Hráč se znovu vrátí na pozici, ve které začal.
             player.Top = 500;
             player.Left = 100;
 
@@ -602,26 +582,21 @@ namespace Agent_Ace
             lblScore.Top = 26;
             lblScore.Left = 379;
 
-            // While loop pro zničení všech střel při restartování hry.
             while (bulletCount > 0)
             {
                 foreach (Control x in this.Controls)
                 {
-                    // if, který zjistí, jestli daný picturebox má Tag bullet.
                     if ((string)x.Tag == "bullet")
                     {
-                        // Metedou se zničí všechny kulky
                         RemoveBullet((PictureBox)x);
                     }
                 }
             }
-            // Při zmáčknutí Enter se game timer zase spustí a hra znovu začne.
             GameTimer.Start();
         }
 
         private async void GameOver() 
         {
-            // Metoda game over zastaví timer hry, to znamená že se všechno zastaví a pomocí metory RestartGame se vrátí vše do defaultních hodnot.
             GameTimer.Stop();
             lblScore.Text = "Score: " + Math.Round(score, 0) + " m";
             lblGameOver.Show();
@@ -637,7 +612,6 @@ namespace Agent_Ace
 
         private void RemoveBullet(PictureBox bullet) 
         {
-            // Metoda, která kulky zničí.
             this.Controls.Remove(bullet);
             bullet.Dispose();
             bulletCount--;
@@ -645,30 +619,22 @@ namespace Agent_Ace
 
         private void MakeBullet(int width, int height)
         {
-            // Metoda, která kulky vytváří, tady to dělám tak, že si metoda vytvoří nový picturebox a do něj udělá novou kulku.
             PictureBox bullet = new PictureBox();
-            // Barva kulky.
             bullet.BackColor = Color.LightGoldenrodYellow;
-            // Výška a šířka kulky.
             bullet.Height = height;
             bullet.Width = width;
 
-            // Tady se nastavuje poloha kulky. Mám to udělaný tak, aby se kulka objevila přímo v pravo uprostřed hráče / auta.
             bullet.Left = player.Left + player.Width;
             bullet.Top = player.Top + player.Height / 2;
             
-            // Definuje Tag kulky.
             bullet.Tag = "bullet";
 
-            // Kulka se přidá do forms.
             this.Controls.Add(bullet);
-            // Kulku přidáme do proměnné bulletCount.
             bulletCount++;
         }
 
         private void MakeSpaceBullet() 
         {
-            // To stjné platí i pro ostatní metody, ale tady chci aby se kulka zobrazila dvakrát, protože Space Rifle má damage x2
             for (int i = 0; i < 2; i++)
             {
                 PictureBox bullet = new PictureBox();
@@ -736,17 +702,11 @@ namespace Agent_Ace
             bulletCount++;
         }
 
-        // Zde jsem použil asynchornní metodu.
-        // Tato metoda běží synchronně, dokud nedosáhne proměnnou await, kde je metoda pozastavena, dokud není očekávaná úloha dokončena.
         private async void GunOverheat() 
         {
-            // Metodou jsem zabránil hráči aby spammoval spacebar nepřetržitě, aby si hru trochu víc užil.
             shot = true;
-            // proměnou gunOverheat zjistíme jestli je nebo není zbraň přehrátá.
             gunOverheat = true;
-            // Pokud jo tak nam pomocí lblGunOverheat zobrazí když je zbraň přehřátá a nedá se použít.
             lblGunOverheat.Text = "GUN OVERHEAT";
-            // Ify, který kontrolují jaká zbraň je vybraná, a dají tam příslušnou fotku.
             if (rdbEquipBuiltInPistol.Checked)
             {
                 player.Image = Properties.Resources.playerCarOverheat;
@@ -768,12 +728,10 @@ namespace Agent_Ace
                 player.Image = Properties.Resources.playerCarSonicGunOverheat;
             }
 
-            // Zde metoda počká 2000 milisekund.
             await Task.Delay(2000);
-            // A po 2000 milisekundách se proměnná vratí na true a hráč zase může střílet.
             lblGunOverheat.Text = "";
             gunOverheat = false;
-            // Vratím se na normální fotky.
+
             if (rdbEquipBuiltInPistol.Checked)
             {
                 player.Image = Properties.Resources.playerCar;
@@ -798,17 +756,13 @@ namespace Agent_Ace
 
         private void ObstacleChangeSet(PictureBox obstacle)
         {
-            // Zde změním obrázek, pozici a velikost překážek.
-            // Nejdřív random number generator vyvolá náhodné číslo.
             indexObstacle = rnd.Next(1, 5);
 
-            // Překážka zapadne do jedné z pěti pruhů.
             int[] laneArray = new int[] { 245, 370, 495, 620, 745 };
             int randomIndex = rnd.Next(0, laneArray.Length);
             obstacle.Left = rnd.Next(2000, 4001);
             obstacle.Top = laneArray[randomIndex];
 
-            // Náhodné číslo použijem při vybýrání obrázků a velikosti.
             switch (indexObstacle)
             {
                 case 1:
@@ -836,7 +790,7 @@ namespace Agent_Ace
             }
         }
 
-        // Metody které mění překážky.
+
         private void ChangeObstacle1() 
         {
             ObstacleChangeSet(obstacle1);
@@ -849,24 +803,19 @@ namespace Agent_Ace
 
         private void CarChangeSet(PictureBox enemy, ProgressBar pgbEnemy)
         {
-            // Funguje stejně jako překážky, až na to, že hummer/van a tanky se budou zobrazovat od většího scóre.
             if (score > 1500)
             {
-                // Tanky a hummer.
                 index = rnd.Next(1, 5);
             }
             else if (score > 750)
             {
-                // Hummer.
                 index = rnd.Next(1, 4);
             }
             else
             {
-                // Policie nebo SWAT.
                 index = rnd.Next(1, 3);
             }
 
-            // Zadefinuje obrázek a životy.
             switch (index)
             {
                 case 1:
@@ -895,7 +844,6 @@ namespace Agent_Ace
                     break;
             }
 
-            // Přeřadí je do pruhů.
             int[] laneArray = new int[] { 240, 365, 490, 615, 740 };
             int randomIndex = rnd.Next(0, laneArray.Length);
             enemy.Left = rnd.Next(2000, 2501);
@@ -906,7 +854,6 @@ namespace Agent_Ace
             pgbEnemy.Show();
         }
 
-        // Metodý které mění nepřátelské auta.
         private void ChangeCar1()
         {
             swathp1 = 3;
@@ -954,33 +901,26 @@ namespace Agent_Ace
             }
         }
 
-        // Tlačítko pokračovat
         private void btnResume_Click(object sender, EventArgs e)
         {
-            // Znovu začne hru.
             shot = false;
             gunOverheat = false;
             Pause();
             GameTimer.Start();
         }
 
-        // Tlačítko restartovat hru
         private void btnRestart_Click(object sender, EventArgs e)
         {
-            // Restartuje hru
             RestartGame();
             Pause();
         }
 
-        // Tlačítko obchod
         private void btnShop_Click(object sender, EventArgs e)
         {
-            // Message Box pokud chce jít uživatel do obchodu koupit si nové zbraně.
             DialogResult msgShop = MessageBox.Show("Are you sure you want to your abondon current run?", "Go to shop", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
             if (msgShop == System.Windows.Forms.DialogResult.Yes)
             {
-                // Pokud jo tak ukáže obchod.
                 pcbShop.Show();
                 pcbRifle.Show();
                 pcbSpaceRifle.Show();
@@ -1008,7 +948,6 @@ namespace Agent_Ace
                 btnBuySonicGun.Show();
                 txtSonicGunDesc.Show();
 
-                // Pokud uživatel koupil zbraň, tak se zobrazí Radio button, kde si může zbraň navolit.
                 if (btnBuyRifle.Enabled == false)
                 {
                     rdbEquipRifle.Show();
@@ -1041,8 +980,6 @@ namespace Agent_Ace
                 btnMainMenuShop.Enabled = true;
             }
         }
-
-        // Metoda Pause usnadnění kódování.
         private void Pause() 
         {
             btnResume.Visible = false;
@@ -1063,14 +1000,12 @@ namespace Agent_Ace
 
         private void InsufficientFunds(int price, Button btnGun, RadioButton rdbGun)
         {
-            // Pokud má uživatel nedostatek peněz, tak nemuže koupit zbraň.
             if (cash < price)
             {
                 MessageBox.Show("Not enough cashmoney you dingus", "Insufficient Funds", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                // Pokud jo tak mu to vezme prachy
                 cash -= price;
                 lblCashShop.Text = "Cashmoney: " + cash + "$€";
                 btnGun.Text = "!bought!";
@@ -1082,7 +1017,6 @@ namespace Agent_Ace
             }
         }
 
-        // Metody pro zakoupení zbraní.
         private void btnBuyRifle_Click(object sender, EventArgs e)
         {
             InsufficientFunds(riflePrice, btnBuyRifle, rdbEquipRifle);
@@ -1100,10 +1034,8 @@ namespace Agent_Ace
             InsufficientFunds(sonicGunPrice, btnBuySonicGun, rdbEquipSonicGun);
         }
 
-        // Jít zpátky z obchodu.
         private void btnBack_Click(object sender, EventArgs e)
         {
-            // Všechno se znovu zavře.
             pcbShop.Visible = false;
             pcbRifle.Visible = false;
             pcbSpaceRifle.Visible = false;
@@ -1147,12 +1079,9 @@ namespace Agent_Ace
             btnMainMenuShop.Visible = false;
             btnMainMenuShop.Enabled = false;
 
-            // Hra se restartuje.
             RestartGame();
             Pause();
         }
-
-        // Metody, které zobrazí obrázek zbraně ve hře.
         private void rdbEquipRifle_CheckedChanged(object sender, EventArgs e)
         {
             player.Image = Properties.Resources.playerCarRifle;

@@ -12,19 +12,21 @@ using System.IO;
 
 namespace Agent_Ace
 {
-    // SPSŠ Betlémská, 3.I Karim Boufala
-    // Version: 1.2.0 - loads of bug fixes.
-    // Version: 1.1.0 - added save and load function.
+    // ČZU PEF: Informatics
+    // Creator: Karim Boufala
+
+    // Date: 13.05.2024
     // Version: 1.0.0 - game release.
-    // Date: 13.05.2021
+    // Version: 1.1.0 - added save and load function.
+    // Version: 1.2.0 - loads of bug fixes.
 
     public partial class MainMenu : Form
     {
-        // Hodnoty ze hry
+        // Values from the game (if the game was running prior to exiting to the main menu, all values will load back)
         public static int cash;
         public static bool hasRifle, hasSpaceRifle, hasMachineGun, hasSonicGun;
         public static string cashS, hasRifleS, hasSpaceRifleS, hasMachineGunS, hasSonicGunS;
-        // Třída hlavní menu, kde si uživatel vybere jestli chce hru spustit, jít do nastevní nebo hru ukončit.
+
         public MainMenu()
         {
             InitializeComponent();
@@ -33,12 +35,11 @@ namespace Agent_Ace
             hasMachineGun = GameScreen.hasMachineGun;
             hasSonicGun = GameScreen.hasSonicGun;
         }
-        // Thread pro optimalizaci hry, kde když uživatel klikne na jedno z tlačítek, tak se hlavní menu uzavře.
         Thread thr;
 
         private void MainMenu_Load(object sender, EventArgs e)
         {
-            // Kód pro maximalizaci hry, neboli fullscreen.
+            // Auto full screen
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             TopMost = true;
@@ -46,14 +47,11 @@ namespace Agent_Ace
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            // Pokud uživatel zmáčkne tlačítko exit, aplikace se uzavře.
             Application.Exit();
         }
 
         private void LoadGame(object sender, EventArgs e)
         {
-            // Tlačítko pro start hry.
-            // Tady když uživatel zamáčkne tlačítko, tak se nejdřív zobrazí formulář se hrou a hned na to se hlavní menu zavře.
             GameScreen gameWindow = new GameScreen();
             gameWindow.Show();
             this.Close();
@@ -62,7 +60,7 @@ namespace Agent_Ace
             thr.Start();
         }
 
-        // Load Save function
+        // Save function
         private void btnSaveProgress_Click(object sender, EventArgs e)
         {
             DialogResult msgWarning = MessageBox.Show("You can only save the game in one file.\n        Do you stil want to proceed?", "WARNING", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
@@ -80,6 +78,7 @@ namespace Agent_Ace
             }
         }
 
+        // Load function
         private void btnLoadProgress_Click(object sender, EventArgs e)
         {
             using (StreamReader sr = new StreamReader("save.txt"))
@@ -94,7 +93,6 @@ namespace Agent_Ace
 
         private void LoadSettings(object sender, EventArgs e)
         {
-            // Tlačítko pro nastavení hry.
             SettingsScreen gameWindow = new SettingsScreen();
             gameWindow.Show();
             this.Close();

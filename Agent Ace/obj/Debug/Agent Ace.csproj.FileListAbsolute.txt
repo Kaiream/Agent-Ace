@@ -1,7 +1,6 @@
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\bin\Debug\Agent Ace.exe.config
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\bin\Debug\Agent Ace.exe
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\bin\Debug\Agent Ace.pdb
-C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent Ace.csprojAssemblyReference.cache
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent_Ace.GameScreen.resources
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent_Ace.MainMenu.resources
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent_Ace.Properties.Resources.resources
@@ -10,3 +9,4 @@ C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\ob
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent Ace.csproj.CoreCompileInputs.cache
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent Ace.exe
 C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent Ace.pdb
+C:\Users\karim\Documents\School\PVA\3.ročník závěrečná práce\Agent Ace\obj\Debug\Agent Ace.csproj.AssemblyReference.cache
